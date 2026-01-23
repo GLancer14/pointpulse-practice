@@ -1,7 +1,7 @@
 import styles from './TaskEdit.module.scss'
 import { useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { useTaskById, updateTask } from '../../../Shared/api';
+import { useUpdateTaskMutation, useGetTaskById } from '../../../Shared/api';
 import { InputText } from '../../../Shared/ui';
 
 export function TaskEdit() {
@@ -9,37 +9,35 @@ export function TaskEdit() {
   const navigation = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
-  function handleSearchUpdatedTask(id: string) {
-    const editedTaskSearchResult = getTaskById(id);
-    if (!editedTaskSearchResult) {
-      throw new Error("Такой задачи не существует");
-    }
-
-    setTitle(editedTaskSearchResult.title);
-    setDescription(editedTaskSearchResult.description);
-  }
+  const [initialDataLoaded, setInititalDataLoaded] = useState(false);
+  const taskData = useGetTaskById(id);
+  const updateTask = useUpdateTaskMutation();
 
   function hanldeSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const editedTask = updateTask({
+    updateTask.mutate({
       id: id,
       title,
       description,
+    },
+    {
+      onSuccess: (editedTask) => {
+        navigation(`/task/view/${editedTask.id}`);
+      },
+      onError: (error) => {
+        console.log("Ошибка изменения задачи", error);
+        throw new Error("Ошибка изменения задачи");
+      }
     });
-
-    if (!editedTask) {
-      throw new Error("Ошибка создания задачи");
-    }
-
-    navigation(`/task/view/${editedTask.id}`);
   }
 
   useEffect(() => {
-    if (id) {
-      handleSearchUpdatedTask(id);
+    if (taskData.data && initialDataLoaded === false) {
+      setTitle(taskData.data.title);
+      setDescription(taskData.data.description);
+      setInititalDataLoaded(true);
     }
-  }, []);
+  }, [taskData, initialDataLoaded, useGetTaskById]);
 
   return (
     <form className={styles.form} onSubmit={e => hanldeSubmit(e)}>

@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, type UseMutationResult, type U
 import { tasks } from "../model/tasks";
 import type { Task, TaskDto } from "../models/models";
 import { v4 as uuid } from "uuid";
+import { queryClient } from "./client";
 
 export function useInfiniteTasks(perPage: number = 3) {
   return useInfiniteQuery({
@@ -20,7 +21,7 @@ export function useInfiniteTasks(perPage: number = 3) {
   });
 }
 
-export function useTaskById(id: string | undefined): UseQueryResult<Task | null, Error> {
+export function useGetTaskById(id: string | undefined): UseQueryResult<Task | null, Error> {
   return useQuery({
     queryKey: ["tasks", id],
     queryFn: async (): Promise<Task | null> => {
@@ -57,34 +58,52 @@ export function useCreateTaskMutation(): UseMutationResult<{
   });
 }
 
-export function updateTask(taskData: Partial<Task>): Task {
-  const foundTask = tasks.findIndex(task => {
-    if (taskData.id) {
-      return task.id === taskData.id;
+export function useUpdateTaskMutation(): UseMutationResult<{
+    id: string;
+    title: string;
+    description: string;
+}, Error, Partial<Task>, unknown> {
+  return useMutation({
+    mutationFn: async (taskData: Partial<Task>) => {
+      const foundTask = tasks.findIndex(task => {
+        if (taskData.id) {
+          return task.id === taskData.id;
+        }
+      });
+      if (foundTask === -1) {
+        throw new Error("Такой задачи не существует");
+      }
+
+      const modifiedTask = {
+        id: tasks[foundTask].id,
+        title: taskData.title === "" || taskData.title === undefined ? tasks[foundTask].title : taskData.title,
+        description: taskData.description === "" || taskData.description === undefined ? tasks[foundTask].description : taskData.description,
+      }
+    
+      tasks[foundTask] = modifiedTask
+
+      return modifiedTask;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["tasks", "infinite"] });
     }
   });
-
-  if (foundTask === -1) {
-    throw new Error("Такой задачи не существует");
-  }
-
-  tasks[foundTask] = {
-    id: tasks[foundTask].id,
-    title: taskData.title === "" || taskData.title === undefined ? tasks[foundTask].title : taskData.title,
-    description: taskData.description === "" || taskData.description === undefined ? tasks[foundTask].description : taskData.description,
-  }
-
-  return tasks[foundTask];
 }
 
-export function deleteTask(id: string): Task {
-  const foundTask = tasks.findIndex(task => {
-    return task.id === id;
+export function useDeleteTaskMutation(): UseMutationResult<Task, Error, string, unknown> {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const foundTask = tasks.findIndex(task => {
+        return task.id === id;
+      });
+      if (foundTask === -1) {
+        throw new Error("Такой задачи не существует");
+      }
+
+      return tasks.splice(foundTask, 1)[0];
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["tasks", "infinite"] });
+    }
   });
-
-  if (foundTask === -1) {
-    throw new Error("Такой задачи не существует");
-  }
-
-  return tasks.splice(foundTask, 1)[0];
 }
