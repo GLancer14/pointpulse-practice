@@ -19,7 +19,6 @@ export function Main() {
   
   const { ref, inView } = useInView({
     threshold: 0,
-    delay: 500,
   });
 
   useEffect(() => {

@@ -1,26 +1,32 @@
 import styles from './TaskCreate.module.scss'
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
-import { createTask } from '../../../Shared/api';
+import { useCreateTaskMutation } from '../../../Shared/api';
 import { InputText } from '../../../Shared/ui';
 
 export function TaskCreate() {
   const navigation = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const createTask = useCreateTaskMutation();
 
-  function hanldeSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function hanldeSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const createdTask = createTask({
-      title,
-      description,
-    });
-
-    if (!createdTask) {
-      throw new Error("Ошибка создания задачи");
-    }
-
-    navigation(`/task/view/${createdTask.id}`);
+    createTask.mutate(
+      {
+        title,
+        description,
+      },
+      {
+        onSuccess: (createdTask) => {
+          navigation(`/task/view/${createdTask.id}`);
+        },
+        onError: (error) => {
+          console.log("Ошибка создания задачи", error);
+          throw new Error("Ошибка создания задачи");
+        }
+      }
+    );
   }
 
   return (
@@ -31,12 +37,14 @@ export function TaskCreate() {
         setValue={setTitle}
         title={"Заголовок"}
         placeholder={"Введите заголовок"}
+        required={true}
       />
       <InputText
         value={description}
         setValue={setDescription}
         title={"Описание"}
         placeholder={"Введите описание"}
+        required={true}
       />
       <button className={styles.submit}>
         Создать

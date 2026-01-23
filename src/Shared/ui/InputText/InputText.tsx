@@ -2,10 +2,11 @@ import styles from './InputText.module.scss'
 import { type Dispatch, type SetStateAction } from 'react';
 
 export interface InputTextPropsType {
-  value: string,
-  setValue: Dispatch<SetStateAction<string>>,
-  title: string,
-  placeholder?: string,
+  value: string;
+  setValue: Dispatch<SetStateAction<string>>;
+  title: string;
+  placeholder?: string;
+  required?: boolean;
 }
 
 export function InputText({
@@ -13,6 +14,7 @@ export function InputText({
   setValue,
   title,
   placeholder,
+  required,
 }: InputTextPropsType) {
   return (
     <label className={styles.label}>
@@ -25,6 +27,7 @@ export function InputText({
         }}
         value={value}
         placeholder={placeholder}
+        required={required}
       />
     </label>
   );

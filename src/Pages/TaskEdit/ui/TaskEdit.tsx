@@ -1,7 +1,7 @@
 import styles from './TaskEdit.module.scss'
 import { useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { getTaskById, updateTask } from '../../../Shared/api';
+import { useTaskById, updateTask } from '../../../Shared/api';
 import { InputText } from '../../../Shared/ui';
 
 export function TaskEdit() {

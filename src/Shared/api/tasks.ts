@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
 import { tasks } from "../model/tasks";
 import type { Task, TaskDto } from "../models/models";
 import { v4 as uuid } from "uuid";
@@ -9,11 +9,7 @@ export function useInfiniteTasks(perPage: number = 3) {
     queryFn: async ({ pageParam = 1 }): Promise<{data: Array<Task>, nextPage: number | null}> => {
       const startIndex = perPage * (pageParam - 1);
       const endIndex = startIndex + perPage;
-      console.log({
-        data: tasks.slice(startIndex, endIndex),
-        nextPage: tasks.length > endIndex ? pageParam + 1 : null,
-      })
-
+      
       return {
         data: tasks.slice(startIndex, endIndex),
         nextPage: tasks.length > endIndex ? pageParam + 1 : null,
@@ -24,23 +20,41 @@ export function useInfiniteTasks(perPage: number = 3) {
   });
 }
 
-export function getTaskById(id: string): Task | null {
-  const foundTask = tasks.find(task => task.id === id);
-  if (foundTask) {
-    return foundTask;
-  } else {
-    return null;
-  }
+export function useTaskById(id: string | undefined): UseQueryResult<Task | null, Error> {
+  return useQuery({
+    queryKey: ["tasks", id],
+    queryFn: async (): Promise<Task | null> => {
+      if (id) {
+        const foundTask = tasks.find(task => task.id === id);
+        if (foundTask) {
+          return foundTask;
+        } else {
+          return null;
+        }
+      } else {
+        throw Error("Такой задачи не существует")
+      }
+    },
+    enabled: !!id,
+  });
 }
 
-export function createTask(taskData: TaskDto): Task {
-  const newTask = {
-    id: uuid(),
-    ...taskData,
-  };
-
-  tasks.push(newTask);
-  return newTask;
+export function useCreateTaskMutation(): UseMutationResult<{
+    id: string;
+    title: string;
+    description: string;
+}, Error, TaskDto, unknown> {
+  return useMutation({
+    mutationFn: async (taskData: TaskDto) => {
+      const newTask = {
+        id: uuid(),
+        ...taskData,
+      };
+    
+      tasks.push(newTask);
+      return newTask;
+    },
+  });
 }
 
 export function updateTask(taskData: Partial<Task>): Task {
