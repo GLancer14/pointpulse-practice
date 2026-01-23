@@ -1,14 +1,23 @@
 .wrp {
-  width: 200px;
+  justify-self: center;
+  width: 400px;
+  margin: 0 auto;
+  padding: 8px;
 
   border: 1px solid red;
   border-radius: 16px;
   background-color: pink;
 
-  .header {
-    margin-bottom: 8px;
+  color: black;
 
-    font-size: 12px;
+  .header {
+    margin-bottom: 4px;
+
+    font-size: 20px;
     text-align: center;
+  }
+
+  .message {
+    font-size: 16px;
   }
 }

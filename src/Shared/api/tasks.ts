@@ -27,18 +27,19 @@ export function useGetTaskById(id: string | undefined): UseQueryResult<Task | nu
   return useQuery({
     queryKey: ["tasks", id],
     queryFn: async (): Promise<Task | null> => {
-      if (id) {
-        const foundTask = tasks.find(task => task.id === id);
-        if (foundTask) {
-          return foundTask;
-        } else {
-          return null;
-        }
+      if (!id) {
+        throw Error("ID задачи не предоставлен");
+      }
+
+      const foundTask = tasks.find(task => task.id === id);
+      if (foundTask) {
+        return foundTask;
       } else {
-        throw Error("Такой задачи не существует");
+        throw new Error("Такой задачи не существует");
       }
     },
     enabled: !!id,
+    retry: false,
   });
 }
 

@@ -8,17 +8,13 @@ export function TaskView() {
   const navigation = useNavigate();
   const { error, isError, data } = useGetTaskById(id);
 
-  if (isError) {
-    return <ErrorMessage message={error?.message || "Ошибка получения данных"} />
-  }
-
   return (
     <>
       <h2 className={styles.title}>Просмотр задачи</h2>
       {
-        data == null
-          ? <div>Такой задачи не существует</div>
-          : (<div className={styles.task} key={data.id}>
+        isError
+          ? <ErrorMessage message={error?.message || "Ошибка получения данных"} />
+          : data && (<div className={styles.task} key={data.id}>
               <header className={styles.header}>
                 <div className={styles.taskTitle}>{data.title}</div>
                 <button
