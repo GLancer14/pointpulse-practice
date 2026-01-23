@@ -1,53 +1,38 @@
 import styles from './Main.module.scss'
-import { getTasks, type Task } from "../../../../Shared/api";
-import { useEffect, useState } from 'react';
+import { useInfiniteTasks } from "../../../../Shared/api";
+import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Task as TaskBlock } from '../Task/Task';
 
 export function Main() {
   const navigation = useNavigate();
-  const [page, setPage] = useState(0);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfiniteTasks(3);
   
   const { ref, inView } = useInView({
     threshold: 0,
     delay: 500,
   });
 
-  const fetchTasks = (isInitialLoad = false) => {
-    const loadedTasks = getTasks({
-      per_page: 3,
-      page: page,
-    });
-
-    if (loadedTasks) {
-      if (isInitialLoad) {
-        setTasks(loadedTasks);
-        setPage(1);
-      } else {
-        setTasks(prevTasks => [ ...prevTasks, ...loadedTasks ]);
-        setPage(previosPage => previosPage + 1);
-      }
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    if (isInitialLoad) {
-      setInitialLoadDone(true);
-    }
+  if (isError) {
+    return <div>Error: {error?.message}</div>
   }
 
-  useEffect(() => {
-    if (!initialLoadDone) {
-      fetchTasks(true);
-    }
-  }, [initialLoadDone]);
-
-  useEffect(() => {
-    if (inView === true) {
-      fetchTasks(false);
-    }
-  }, [inView]);
+  const allTasks = data?.pages.flatMap(page => page.data) || [];
 
   return (
     <main className={styles.main}>
@@ -58,11 +43,11 @@ export function Main() {
       <div className={styles.tasksWrp}>
         <h2 className={styles.wrpHeader}>Задачи</h2>
         <section className={styles.tasks}>
-          {tasks.map((taskData, ind) => {
+          {!isLoading && allTasks.map((taskData, ind) => {
             return <TaskBlock taskData={taskData} ind={ind} key={taskData.id} />;
           })}
         </section>
-        <div ref={ref}></div>
+        {hasNextPage && <div ref={ref}></div>}
       </div>
     </main>
   )

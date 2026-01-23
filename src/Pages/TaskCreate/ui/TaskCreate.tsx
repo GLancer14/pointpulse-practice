@@ -1,7 +1,7 @@
 import styles from './TaskCreate.module.scss'
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
-import { createTask } from '../../../Shared/api/client';
+import { createTask } from '../../../Shared/api';
 import { InputText } from '../../../Shared/ui';
 
 export function TaskCreate() {

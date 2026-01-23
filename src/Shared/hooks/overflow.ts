@@ -5,7 +5,6 @@ export function useIsOverflowing(ref: { current: HTMLElement | null }): boolean 
   
   useEffect(() => {
     const { current } = ref;
-    console.log(ref)
     if (current) {
       const checkOverflow = () => {
         const { scrollHeight, scrollWidth, clientHeight, clientWidth } = current;

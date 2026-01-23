@@ -9,8 +9,3 @@ export type TaskDto = {
   title: string;
   description: string;
 };
-
-export type GetTasksParams = {
-  page: number;
-  per_page: number;
-}
