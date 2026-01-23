@@ -1,0 +1,48 @@
+.task {
+  padding: 16px;
+
+  text-align: left;
+
+  background-color: rgba(245, 245, 245, 0.733);
+  border: 1px solid black;
+  border-radius: 16px;
+
+  color: black;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+
+    font-size: 24px;
+
+    .btnsWrp {
+      display: flex;
+      gap: 8px;
+
+      button {
+        padding: 0;
+
+        background-color: transparent;
+        color: black;
+      }
+
+      button:hover {
+        color: red;
+      }
+    }
+  }
+
+  .description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    max-height: calc(16px * 1.5 * 2);
+    
+    overflow-y: hidden;
+  }
+}

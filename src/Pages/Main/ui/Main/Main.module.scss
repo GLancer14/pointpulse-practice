@@ -1,0 +1,27 @@
+.main {
+  text-align: center;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+  }
+
+  .tasksWrp {
+    width: 70%;
+    margin: 0 auto;
+
+    .wrpHeader {
+      margin-bottom: 16px;
+    }
+
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+    }
+  }
+}

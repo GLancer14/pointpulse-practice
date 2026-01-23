@@ -1,0 +1,32 @@
+.title {
+  margin-bottom: 16px;
+}
+
+.task {
+  width: 70%;
+  padding: 16px;
+  margin: 0 auto;
+
+  text-align: left;
+
+  background-color: rgba(245, 245, 245, 0.733);
+  border: 1px solid black;
+  border-radius: 16px;
+
+  color: black;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+
+    font-size: 24px;
+
+    button {
+      padding: 8px;
+    }
+  }
+}
