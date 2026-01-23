@@ -10,6 +10,8 @@ export function useInfiniteTasks(perPage: number = 3) {
     queryFn: async ({ pageParam = 1 }): Promise<{data: Array<Task>, nextPage: number | null}> => {
       const startIndex = perPage * (pageParam - 1);
       const endIndex = startIndex + perPage;
+
+      await new Promise(resolve => setTimeout(() => resolve(null), 1500));
       
       return {
         data: tasks.slice(startIndex, endIndex),
@@ -33,7 +35,7 @@ export function useGetTaskById(id: string | undefined): UseQueryResult<Task | nu
           return null;
         }
       } else {
-        throw Error("Такой задачи не существует")
+        throw Error("Такой задачи не существует");
       }
     },
     enabled: !!id,

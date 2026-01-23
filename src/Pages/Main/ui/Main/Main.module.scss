@@ -1,27 +1,15 @@
-.main {
-  text-align: center;
+.tasksWrp {
+  width: 70%;
+  margin: 0 auto;
 
-  .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
+  .wrpHeader {
     margin-bottom: 16px;
   }
-
-  .tasksWrp {
-    width: 70%;
-    margin: 0 auto;
-
-    .wrpHeader {
-      margin-bottom: 16px;
-    }
-
-    .tasks {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 16px;
-    }
+  
+  .tasks {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
   }
 }

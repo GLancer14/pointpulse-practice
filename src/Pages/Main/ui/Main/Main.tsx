@@ -1,12 +1,11 @@
-import styles from './Main.module.scss'
+import styles from "./Main.module.scss";
 import { useInfiniteTasks } from "../../../../Shared/api";
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useNavigate } from 'react-router';
 import { Task as TaskBlock } from '../Task/Task';
+import { ErrorMessage } from "../../../../Shared/ui";
 
 export function Main() {
-  const navigation = useNavigate();
   const {
     data,
     error,
@@ -28,26 +27,20 @@ export function Main() {
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isError) {
-    return <div>Error: {error?.message}</div>
+    return <ErrorMessage message={error?.message || "Ошибка получения данных"} />
   }
 
   const allTasks = data?.pages.flatMap(page => page.data) || [];
 
   return (
-    <main className={styles.main}>
-      <header className={styles.header}>
-        <h1 className={styles.headerTitle}>Мои Задачи</h1>
-        <button type="button" onClick={() => navigation("/task/create")}>Добавить</button>
-      </header>
-      <div className={styles.tasksWrp}>
-        <h2 className={styles.wrpHeader}>Задачи</h2>
-        <section className={styles.tasks}>
-          {!isLoading && allTasks.map((taskData, ind) => {
-            return <TaskBlock taskData={taskData} ind={ind} key={taskData.id} />;
-          })}
-        </section>
-        {hasNextPage && <div ref={ref}></div>}
-      </div>
-    </main>
+    <div className={styles.tasksWrp}>
+      <h2 className={styles.wrpHeader}>Задачи</h2>
+      <section className={styles.tasks}>
+        {isLoading ? "Loading..." : allTasks.map((taskData, ind) => {
+          return <TaskBlock taskData={taskData} ind={ind} key={taskData.id} />;
+        })}
+      </section>
+      {hasNextPage && <div ref={ref}>{isFetchingNextPage && "Loading..."}</div>}
+    </div>
   )
 }

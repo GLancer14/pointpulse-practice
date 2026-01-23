@@ -1,0 +1,14 @@
+.wrp {
+  width: 200px;
+
+  border: 1px solid red;
+  border-radius: 16px;
+  background-color: pink;
+
+  .header {
+    margin-bottom: 8px;
+
+    font-size: 12px;
+    text-align: center;
+  }
+}

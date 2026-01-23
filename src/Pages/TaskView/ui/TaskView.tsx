@@ -1,6 +1,7 @@
 import styles from './TaskView.module.scss'
 import { useNavigate, useParams } from 'react-router';
 import { useGetTaskById } from '../../../Shared/api';
+import { ErrorMessage } from '../../../Shared/ui';
 
 export function TaskView() {
   const { id } = useParams();
@@ -8,7 +9,7 @@ export function TaskView() {
   const { error, isError, data } = useGetTaskById(id);
 
   if (isError) {
-    return <div>Error: {error?.message}</div>
+    return <ErrorMessage message={error?.message || "Ошибка получения данных"} />
   }
 
   return (
