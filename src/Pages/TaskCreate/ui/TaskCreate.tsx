@@ -2,7 +2,7 @@ import styles from './TaskCreate.module.scss'
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useCreateTaskMutation } from '../../../Shared/api';
-import { InputText } from '../../../Shared/ui';
+import { ErrorMessage, InputText } from '../../../Shared/ui';
 
 export function TaskCreate() {
   const navigation = useNavigate();
@@ -46,6 +46,10 @@ export function TaskCreate() {
         placeholder={"Введите описание"}
         required={true}
       />
+      {
+        createTask.isError &&
+          <ErrorMessage message={createTask.error?.message || "Ошибка получения данных"} />
+      }
       <button className={styles.submit}>
         Создать
       </button>

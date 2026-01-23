@@ -19,6 +19,7 @@ export function Task({ taskData, ind }: { taskData: Task, ind: number }) {
           alert(`Задача ${deletedTask.title} успешно удалена!`);
         },
         onError: (error) => {
+          alert("Ошибка удаления задачи");
           console.log("Ошибка удаления задачи", error);
           throw new Error("Ошибка удаления задачи");
         }

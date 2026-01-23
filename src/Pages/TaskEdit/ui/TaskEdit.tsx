@@ -2,7 +2,7 @@ import styles from './TaskEdit.module.scss'
 import { useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { useUpdateTaskMutation, useGetTaskById } from '../../../Shared/api';
-import { InputText } from '../../../Shared/ui';
+import { ErrorMessage, InputText } from '../../../Shared/ui';
 
 export function TaskEdit() {
   const { id } = useParams();
@@ -54,6 +54,14 @@ export function TaskEdit() {
         title={"Описание"}
         placeholder={"Введите описание"}
       />
+      {
+        updateTask.isError &&
+          <ErrorMessage message={updateTask.error?.message || "Ошибка получения данных"} />
+      }
+      {
+        taskData.isError &&
+          <ErrorMessage message={taskData.error?.message || "Ошибка получения данных"} />
+      }
       <button className={styles.submit}>
         Внести изменения
       </button>

@@ -26,10 +26,6 @@ export function Main() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isError) {
-    return <ErrorMessage message={error?.message || "Ошибка получения данных"} />
-  }
-
   const allTasks = data?.pages.flatMap(page => page.data) || [];
 
   return (
@@ -39,6 +35,7 @@ export function Main() {
         {isLoading ? "Loading..." : allTasks.map((taskData, ind) => {
           return <TaskBlock taskData={taskData} ind={ind} key={taskData.id} />;
         })}
+        {isError && <ErrorMessage message={error?.message || "Ошибка получения данных"} />}
       </section>
       {hasNextPage && <div ref={ref}>{isFetchingNextPage && "Loading..."}</div>}
     </div>
