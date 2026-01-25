@@ -1,5 +1,5 @@
 import styles from './InputText.module.scss'
-import { type Dispatch, type SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
 export interface InputTextPropsType {
   value: string;

@@ -1,17 +1,36 @@
-import { useInfiniteQuery, useMutation, useQuery, type UseMutationResult, type UseQueryResult } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  type UseMutationResult,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { tasks } from "../model/tasks";
-import type { Task, TaskDto } from "../models/models";
+import type {
+  Task,
+  TaskDto,
+  QueryData,
+} from "../models";
 import { v4 as uuid } from "uuid";
 import { queryClient } from "./client";
+import { useRef } from "react";
 
 export function useInfiniteTasks(perPage: number = 3) {
+  const lastCallRef = useRef(1);
+
   return useInfiniteQuery({
     queryKey: ["tasks", "infinite", perPage],
     queryFn: async ({ pageParam = 1 }): Promise<{data: Array<Task>, nextPage: number | null}> => {
       const startIndex = perPage * (pageParam - 1);
       const endIndex = startIndex + perPage;
 
-      await new Promise(resolve => setTimeout(() => resolve(null), 1500));
+      if (pageParam > 1) {
+        const currentQueryPagesNumber = (queryClient.getQueryData(["tasks", "infinite", perPage]) as QueryData).pages.length;
+        if (currentQueryPagesNumber !== lastCallRef.current) {
+          await new Promise(resolve => setTimeout(() => resolve(null), 1500));
+          lastCallRef.current = currentQueryPagesNumber;
+        }
+      }
       
       return {
         data: tasks.slice(startIndex, endIndex),
@@ -55,7 +74,7 @@ export function useCreateTaskMutation(): UseMutationResult<{
         ...taskData,
       };
     
-      tasks.push(newTask);
+      tasks.unshift(newTask);
       return newTask;
     },
   });
