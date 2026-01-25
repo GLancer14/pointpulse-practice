@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router";
 import { Main } from "../../Pages/Main";
 import { TaskView } from "../../Pages/TaskView";
-import { TaskCreate } from "../../Pages/TaskCreate";
-import { TaskEdit } from "../../Pages/TaskEdit";
+import { TaskCreate } from "../../Features/TaskCreate";
+import { TaskEdit } from "../../Features/TaskEdit";
 import { PageLayout } from "../../Pages/PageLayout/PageLayout/PageLayout";
 
 function Router() {
