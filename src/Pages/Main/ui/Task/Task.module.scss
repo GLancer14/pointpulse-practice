@@ -18,6 +18,7 @@
     margin-bottom: 16px;
 
     font-size: 24px;
+    word-break: break-word;
 
     .btnsWrp {
       display: flex;
@@ -42,6 +43,8 @@
     -webkit-line-clamp: 2;
 
     max-height: calc(16px * 1.5 * 2);
+
+    word-break: break-word;
     
     overflow-y: hidden;
   }

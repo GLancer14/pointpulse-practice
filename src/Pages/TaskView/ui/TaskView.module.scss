@@ -24,9 +24,14 @@
     margin-bottom: 16px;
 
     font-size: 24px;
+    word-break: break-word;
 
     button {
       padding: 8px;
     }
+  }
+
+  .description {
+    word-break: break-word;
   }
 }
