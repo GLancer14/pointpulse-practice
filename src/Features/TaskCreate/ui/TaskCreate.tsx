@@ -1,7 +1,7 @@
 import styles from './TaskCreate.module.scss'
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
-import { useCreateTaskMutation } from '../../../Shared/api';
+import { useCreateTaskMutation } from '../api/create';
 import { ErrorMessage, InputText } from '../../../Shared/ui';
 
 export function TaskCreate() {
