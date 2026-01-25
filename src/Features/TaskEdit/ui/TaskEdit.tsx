@@ -28,7 +28,7 @@ export function TaskEdit() {
       onError: (error) => {
         console.log("Ошибка изменения задачи", error);
         throw new Error("Ошибка изменения задачи");
-      }
+      },
     });
   }
 

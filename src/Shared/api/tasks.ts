@@ -6,21 +6,25 @@ import {
   type UseQueryResult,
 } from "@tanstack/react-query";
 import { tasks } from "../model/tasks";
-import type { Task, QueryData } from "../models";
-import { queryClient } from "./client";
+import type {
+  Task,
+  QueryData,
+  InfiniteQueryResult,
+} from "../models";
+import { queryClient } from "./";
 import { useRef } from "react";
 
 export function useInfiniteTasks(perPage: number = 3) {
   const lastCallRef = useRef(1);
 
   return useInfiniteQuery({
-    queryKey: ["tasks", "infinite", perPage],
-    queryFn: async ({ pageParam = 1 }): Promise<{data: Array<Task>, nextPage: number | null}> => {
+    queryKey: ["tasks", "infinite"],
+    queryFn: async ({ pageParam = 1 }): Promise<InfiniteQueryResult> => {
       const startIndex = perPage * (pageParam - 1);
       const endIndex = startIndex + perPage;
 
       if (pageParam > 1) {
-        const currentQueryPagesNumber = (queryClient.getQueryData(["tasks", "infinite", perPage]) as QueryData).pages.length;
+        const currentQueryPagesNumber = (queryClient.getQueryData(["tasks", "infinite"]) as QueryData).pages.length;
         if (currentQueryPagesNumber !== lastCallRef.current) {
           await new Promise(resolve => setTimeout(() => resolve(null), 1500));
           lastCallRef.current = currentQueryPagesNumber;

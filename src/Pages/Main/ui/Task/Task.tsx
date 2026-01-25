@@ -2,7 +2,7 @@ import styles from './Task.module.scss'
 import { Pencil, Trash2 } from "lucide-react";
 import { useDeleteTaskMutation, type Task } from "../../../../Shared/api";
 import { useRef } from 'react';
-import { useIsOverflowing } from '../../../../Shared/hooks/overflow';
+import { useIsOverflowing } from '../../../../Shared/hooks';
 import { Link, useNavigate } from 'react-router';
 
 export function Task({ taskData, ind }: { taskData: Task, ind: number }) {
@@ -22,7 +22,7 @@ export function Task({ taskData, ind }: { taskData: Task, ind: number }) {
           alert("Ошибка удаления задачи");
           console.log("Ошибка удаления задачи", error);
           throw new Error("Ошибка удаления задачи");
-        }
+        },
       },
     );
   }

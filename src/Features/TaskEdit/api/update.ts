@@ -3,11 +3,7 @@ import type { Task } from "../../../Shared/models";
 import { tasks } from "../../../Shared/model/tasks";
 import { queryClient } from "../../../Shared/api";
 
-export function useUpdateTaskMutation(): UseMutationResult<{
-    id: string;
-    title: string;
-    description: string;
-}, Error, Partial<Task>, unknown> {
+export function useUpdateTaskMutation(): UseMutationResult<Task, Error, Partial<Task>, unknown> {
   return useMutation({
     mutationFn: async (taskData: Partial<Task>) => {
       const foundTask = tasks.findIndex(task => {
@@ -21,11 +17,15 @@ export function useUpdateTaskMutation(): UseMutationResult<{
 
       const modifiedTask = {
         id: tasks[foundTask].id,
-        title: taskData.title === "" || taskData.title === undefined ? tasks[foundTask].title : taskData.title,
-        description: taskData.description === "" || taskData.description === undefined ? tasks[foundTask].description : taskData.description,
-      }
+        title: taskData.title === "" || taskData.title === undefined
+          ? tasks[foundTask].title
+          : taskData.title,
+        description: taskData.description === "" || taskData.description === undefined
+          ? tasks[foundTask].description
+          : taskData.description,
+      };
     
-      tasks[foundTask] = modifiedTask
+      tasks[foundTask] = modifiedTask;
 
       return modifiedTask;
     },

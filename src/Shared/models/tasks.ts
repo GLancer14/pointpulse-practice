@@ -1,10 +1,10 @@
-export type Task = {
+export interface Task {
   id: string;
   title: string;
   description: string;
 };
 
-export type TaskDto = {
+export interface TaskDto {
   id?: string;
   title: string;
   description: string;
