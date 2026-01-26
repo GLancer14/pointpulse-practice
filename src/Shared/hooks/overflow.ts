@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useIsOverflowing(ref: { current: HTMLElement | null }): boolean {
+export function useIsOverflowing(ref: { current: HTMLElement | null }, content: string): boolean {
   const [isOverflow, setIsOverflow] = useState(false);
   
   useEffect(() => {
@@ -17,7 +17,7 @@ export function useIsOverflowing(ref: { current: HTMLElement | null }): boolean 
 
       return () => resizeObserver.disconnect();
     }
-  }, [ref]);
+  }, [ref, content]);
 
   return isOverflow;
 }

@@ -8,8 +8,8 @@ import { Link, useNavigate } from 'react-router';
 export function Task({ taskData, ind }: { taskData: Task, ind: number }) {
   const navigation = useNavigate();
   const description = useRef(null);
-  const overflow = useIsOverflowing(description);
   const deleteTask = useDeleteTaskMutation();
+  const overflow = useIsOverflowing(description, taskData.description);
 
   function handleDeleteTask(id: string) {
     deleteTask.mutate(
