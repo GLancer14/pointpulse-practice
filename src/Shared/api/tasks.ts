@@ -8,31 +8,26 @@ import {
 import { tasks } from "../model/tasks";
 import type {
   Task,
-  QueryData,
   InfiniteQueryResult,
 } from "../models";
 import { queryClient } from "./";
-import { useRef } from "react";
 
 export function useInfiniteTasks(perPage: number = 3) {
-  const lastCallRef = useRef(1);
-
   return useInfiniteQuery({
     queryKey: ["tasks", "infinite"],
     queryFn: async ({ pageParam = 1 }): Promise<InfiniteQueryResult> => {
       const startIndex = perPage * (pageParam - 1);
       const endIndex = startIndex + perPage;
 
-      if (pageParam > 1) {
-        const currentQueryPagesNumber = (queryClient.getQueryData(["tasks", "infinite"]) as QueryData).pages.length;
-        if (currentQueryPagesNumber !== lastCallRef.current) {
-          await new Promise(resolve => setTimeout(() => resolve(null), 1500));
-          lastCallRef.current = currentQueryPagesNumber;
-        }
+      const url = new URL(import.meta.env.VITE_SERVER_URL);
+      url.search = new URLSearchParams({startIndex: String(startIndex), endIndex: String(endIndex)}).toString();
+      const response: Response = await fetch(url);
+      if (response.status !== 200) {
+        throw new Error("Server error");
       }
-      
+
       return {
-        data: tasks.slice(startIndex, endIndex),
+        data: await response.json() as Task[],
         nextPage: tasks.length > endIndex ? pageParam + 1 : null,
       };
     },
@@ -46,15 +41,15 @@ export function useGetTaskById(id: string | undefined): UseQueryResult<Task | nu
     queryKey: ["tasks", id],
     queryFn: async (): Promise<Task | null> => {
       if (!id) {
-        throw Error("ID задачи не предоставлен");
+        throw new Error("ID задачи не предоставлен");
       }
 
-      const foundTask = tasks.find(task => task.id === id);
-      if (foundTask) {
-        return foundTask;
-      } else {
-        throw new Error("Такой задачи не существует");
+      const response: Response = await fetch(`${import.meta.env.VITE_SERVER_URL}/${id}`);
+      if (response.status !== 200) {
+        throw new Error("Server error");
       }
+
+      return await response.json();
     },
     enabled: !!id,
     retry: false,
@@ -64,14 +59,14 @@ export function useGetTaskById(id: string | undefined): UseQueryResult<Task | nu
 export function useDeleteTaskMutation(): UseMutationResult<Task, Error, string, unknown> {
   return useMutation({
     mutationFn: async (id: string) => {
-      const foundTask = tasks.findIndex(task => {
-        return task.id === id;
+      const response: Response = await fetch(`${import.meta.env.VITE_SERVER_URL}/${id}`, {
+        method: "DELETE",
       });
-      if (foundTask === -1) {
-        throw new Error("Такой задачи не существует");
+      if (response.status !== 200) {
+        throw new Error("Server error");
       }
 
-      return tasks.splice(foundTask, 1)[0];
+      return await response.json();
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["tasks", "infinite"] });
