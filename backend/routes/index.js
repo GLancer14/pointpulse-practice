@@ -6,9 +6,15 @@ const tasks = require("../data/tasks");
 router.get("/", async (req, res) => {
   try {
     const query = req.query;
-    res.json(tasks.slice(query.startIndex, query.endIndex));
+    res.json({
+      data: tasks.slice(query.startIndex, query.endIndex),
+      status: "ok",
+    });
   } catch(e) {
-    res.status(500).json(e);
+    res.status(500).json({
+      message: "Ошибка сервера",
+      status: "error",
+    });
   }
 });
 
@@ -16,18 +22,31 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      throw new Error("ID задачи не предоставлен");
+      res.status(400).json({
+        message: "ID задачи не предоставлен",
+        status: "error",
+      });
+      return;
     }
 
     const foundTask = tasks.find(task => task.id === id);
     if (!foundTask) {
-      throw new Error("Такой задачи не существует");
+      res.status(404).json({
+        message: "Такой задачи не существует",
+        status: "error",
+      });
+      return;
     }
 
-    res.json(foundTask);
+    res.json({
+      data: foundTask,
+      status: "ok",
+    });
   } catch(e) {
-    console.log(e);
-    res.status(500).json(e);
+    res.status(500).json({
+      message: "Ошибка сервера",
+      status: "error",
+    });
   }
 });
 
@@ -36,9 +55,15 @@ router.post("/", async (req, res) => {
     const body = req.body;
     const newTask = { id: uuid(), ...body };
     tasks.unshift(newTask);
-    res.json(newTask);
+    res.json({
+      data: newTask,
+      status: "ok",
+    });
   } catch(e) {
-    res.status(500).json(e);
+    res.status(500).json({
+      message: "Ошибка сервера",
+      status: "error",
+    });
   }
 });
 
@@ -52,7 +77,11 @@ router.put("/:id", async (req, res) => {
       }
     });
     if (foundTask === -1) {
-      throw new Error("Такой задачи не существует");
+      res.status(404).json({
+        message: "Такой задачи не существует",
+        status: "error",
+      });
+      return;
     }
 
     const modifiedTask = {
@@ -66,9 +95,15 @@ router.put("/:id", async (req, res) => {
     };
 
     tasks[foundTask] = modifiedTask;
-    res.json(modifiedTask);
+    res.json({
+      data: modifiedTask,
+      status: "ok",
+    });
   } catch(e) {
-    res.status(500).json(e);
+    res.status(500).json({
+      message: "Ошибка сервера",
+      status: "error",
+    });
   }
 });
 
@@ -79,12 +114,22 @@ router.delete("/:id", async (req, res) => {
       return task.id === id;
     });
     if (foundTask === -1) {
-      throw new Error("Такой задачи не существует");
+      res.status(404).json({
+        message: "Такой задачи не существует",
+        status: "error",
+      });
+      return;
     }
 
-    res.json(tasks.splice(foundTask, 1)[0]);
+    res.json({
+      data: tasks.splice(foundTask, 1)[0],
+      status: "ok",
+    });
   } catch(e) {
-    res.status(500).json(e);
+    res.status(500).json({
+      message: "Ошибка сервера",
+      status: "error",
+    });
   }
 });
 

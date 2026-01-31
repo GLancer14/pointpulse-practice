@@ -5,10 +5,11 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { tasks } from "../model/tasks";
 import type {
   Task,
   InfiniteQueryResult,
+  ResponseTaskDto,
+  ResponseTasksDto,
 } from "../models";
 import { queryClient } from "./";
 
@@ -20,15 +21,19 @@ export function useInfiniteTasks(perPage: number = 3) {
       const endIndex = startIndex + perPage;
 
       const url = new URL(import.meta.env.VITE_SERVER_URL);
-      url.search = new URLSearchParams({startIndex: String(startIndex), endIndex: String(endIndex)}).toString();
+      url.search = new URLSearchParams({
+        startIndex: String(startIndex),
+        endIndex: String(endIndex),
+      }).toString();
       const response: Response = await fetch(url);
-      if (response.status !== 200) {
-        throw new Error("Server error");
+      const responseJson: ResponseTasksDto = await response.json();
+      if (responseJson.status === "error") {
+        throw new Error(responseJson.message);
       }
 
       return {
-        data: await response.json() as Task[],
-        nextPage: tasks.length > endIndex ? pageParam + 1 : null,
+        data: responseJson.data as Task[],
+        nextPage: (responseJson.data as Task[]).length === perPage ? pageParam + 1 : null,
       };
     },
     getNextPageParam: lastpage => lastpage.nextPage,
@@ -45,11 +50,12 @@ export function useGetTaskById(id: string | undefined): UseQueryResult<Task | nu
       }
 
       const response: Response = await fetch(`${import.meta.env.VITE_SERVER_URL}/${id}`);
-      if (response.status !== 200) {
-        throw new Error("Server error");
+      const responseJson: ResponseTaskDto = await response.json();
+      if (responseJson.status === "error") {
+        throw new Error(responseJson.message);
       }
 
-      return await response.json();
+      return responseJson.data as Task;
     },
     enabled: !!id,
     retry: false,
@@ -62,11 +68,12 @@ export function useDeleteTaskMutation(): UseMutationResult<Task, Error, string, 
       const response: Response = await fetch(`${import.meta.env.VITE_SERVER_URL}/${id}`, {
         method: "DELETE",
       });
-      if (response.status !== 200) {
-        throw new Error("Server error");
+      const responseJson: ResponseTaskDto = await response.json();
+      if (responseJson.status === "error") {
+        throw new Error(responseJson.message);
       }
 
-      return await response.json();
+      return responseJson.data as Task;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["tasks", "infinite"] });

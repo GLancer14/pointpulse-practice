@@ -1,5 +1,9 @@
 import { useMutation, type UseMutationResult } from "@tanstack/react-query";
-import type { Task, TaskDto } from "../../../Shared/models";
+import type {
+  Task,
+  TaskDto,
+  ResponseTaskDto,
+} from "../../../Shared/models";
 import { queryClient } from "../../../Shared/api";
 
 export function useCreateTaskMutation(): UseMutationResult<Task, Error, TaskDto, unknown> {
@@ -12,11 +16,12 @@ export function useCreateTaskMutation(): UseMutationResult<Task, Error, TaskDto,
         },
         body: JSON.stringify(taskData),
       });
-      if (response.status !== 200) {
-        throw new Error("Server error");
+      const responseJson: ResponseTaskDto = await response.json();
+      if (responseJson.status === "error") {
+        throw new Error(responseJson.message);
       }
 
-      return await response.json();
+      return responseJson.data as Task;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["tasks", "infinite"] });

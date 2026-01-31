@@ -1,2 +1,7 @@
 export type { QueryData, InfiniteQueryResult } from "./query";
-export type { Task, TaskDto } from "./tasks";
+export type {
+  Task,
+  TaskDto,
+  ResponseTaskDto,
+  ResponseTasksDto,
+} from "./tasks";
